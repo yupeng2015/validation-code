@@ -1,0 +1,21 @@
+{
+    "name": "soen/validation-code",
+    "description": "验证码工具",
+    "type": "library",
+    "require": {
+        "php": ">=7.1.13"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "soen",
+            "email": "970852318@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+	"autoload": {
+		"psr-4": {
+			"soen\\validationCode\\": "src/"
+		}
+	}
+}
