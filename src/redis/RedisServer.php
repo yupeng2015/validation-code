@@ -1,19 +1,20 @@
 <?php
 namespace soen\validationCode\redis;
 
-use soen\validationCode\codeCommon;
 use soen\validationCode\Driver;
 
 class RedisServer extends Driver {
 
     public $host;
-    public $port;
+    public $port = "6379";
     public $password;
     public $database;
     protected $_redisServer;
     protected $expire_time = 1800;
 
-    function __construct(){
+    function __construct($host){
+        $this->host = $host;
+        //$this->host = $config['port'];
         $this->_redisServer = $this->createConnection();
     }
 
@@ -29,4 +30,21 @@ class RedisServer extends Driver {
         $redis->select($this->database);
         return $redis;
     }
+
+    function add($key,$value,$expire_time=1800){
+        return $this->_redisServer->setex($key,$expire_time,$value);
+    }
+    function delete($key){
+        return $this->_redisServer->delete($key);
+    }
+
+    function get($key){
+        return $this->_redisServer->get($key);
+    }
+
+    function check($key)
+    {
+        return $this->get($key);
+    }
+
 }

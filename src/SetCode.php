@@ -14,18 +14,39 @@ use soen\validationCode\redis\RedisServer;
 class SetCode{
     use Config;
     protected $prefix = "soencode";
-    public $drivers = [];
+    public $currentDeriver;
+    protected $itemKey;
+    protected $itemValue;
+    protected $expire_time = '1600';
 
-    function __construct(Driver $driver){
+    function __construct(Driver $driver,$currentDeriver){
         $config = $this->getConfig()['drivers'];
-        foreach ($config as $key=>$val){
-            $driver->drivers[$key] = new  $val['class']();
-        }
-        var_dump($driver->drivers['redis']);
-        exit;
+        $this->currentDeriver = new $config[$currentDeriver]['class']($config[$currentDeriver]['host']);
     }
 
-    public function addCode($code){
+    public function addItem(array $item,$ttl=0){
+        $this->itemKey = $this->prefix.$item['account'].$item['type'];
+        $this->itemValue = $item['value'];
+        if($ttl){
+            $this->expire_time = $ttl;
+        }
+        return $this;
+     }
 
+     public function putIn(){
+         return $this->currentDeriver->add($this->itemKey,$this->itemValue,$this->expire_time);
+     }
+
+    /**
+     * 获取当前item key的value
+     * @return mixed
+     */
+     public function getItem(){
+         return $this->currentDeriver->get($this->itemKey);
+     }
+
+     public function checkItem($mobile,$type,$value){
+         $this->itemKey = $this->prefix.$mobile.$type;
+         return $this->getItem();
      }
 }

@@ -16,7 +16,8 @@ trait Config{
                     'class' =>  RedisServer::class,
                     'host'  =>  '192.168.1.27',
                     'port'  =>  6379
-                ]
+                ],
+                'session'   =>  []
             ]
         ];
     }
