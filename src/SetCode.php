@@ -8,10 +8,7 @@
 
 namespace soen\validationCode;
 
-
-use soen\validationCode\redis\RedisServer;
-
-class SetCode{
+class SetCode {
     use Config;
     protected $prefix = "soencode";
     public $currentDeriver;
@@ -19,7 +16,7 @@ class SetCode{
     protected $itemValue;
     protected $expire_time = '1600';
 
-    function __construct(Driver $driver,$currentDeriver){
+    function __construct($currentDeriver="redis"){
         $config = $this->getConfig()['drivers'];
         $this->currentDeriver = new $config[$currentDeriver]['class']($config[$currentDeriver]['host']);
     }
@@ -45,8 +42,20 @@ class SetCode{
          return $this->currentDeriver->get($this->itemKey);
      }
 
-     public function checkItem($mobile,$type,$value){
-         $this->itemKey = $this->prefix.$mobile.$type;
-         return $this->getItem();
+    /**
+     * 验证 验证码
+     * @param $account
+     * @param $type
+     * @param $value
+     * @return bool
+     */
+     public function checkItem($account,$type,$value){
+         $this->itemKey = $this->prefix.$account.$type;
+         $isStatus = $this->getItem() == $value;
+         if(!$isStatus){
+          return false;
+         }
+         $this->currentDeriver->delete($this->itemKey);
+         return true;
      }
 }
